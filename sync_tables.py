@@ -7,16 +7,32 @@ import os
 all_themes_df = pd.read_csv('45-All-Themes-Set-Ranking-2023-10-02.csv')
 brickset_sets_df = pd.read_csv('Brickset-Sets.csv')
 
-#remove the '-1' of the set number to match the formatting of my tables
-brickset_sets_df['Number'] = brickset_sets_df['Number'].str.rstrip('-1')
-brickset_sets_df.to_csv('Brickset-Sets.csv', index=False)
+#adds a '-1' to the set number to match the formatting of the brickset csv
+all_themes_df['SET NUMBER'] = all_themes_df['SET NUMBER'].astype(str) + '-1'
+all_themes_df.to_csv('Test all.csv', index=False)
 
 #further divide themes into subtables
 def divide_into_subtables(theme, theme_group):
+    #merges the brickset collection csv with the tablepress table to retrieve the subtheme
+    #this subtheme will be used to split the table into more subtables (ie more csv files)
+    merged_df = pd.merge(theme_group, brickset_sets_df, left_on='SET NUMBER', right_on='Number', how='inner')
+    #merged_df.to_csv('TestMerge.csv', index=False)
 
-    if theme == 'LEGO Creator Expert':
-        #divide into modulars and vehicles
-    elif theme == 'LEGO Star Wars':
+    if theme == 'LEGO Star Wars':
+    #divide into helmets, dioramas, ucs and playsets
+        merged_df_groups = merged_df.groupby('Subtheme')
+        for subtheme, subtheme_group in merged_df_groups:
+            if subtheme == 'Ultimate Collector Series':
+                subtheme_group = subtheme_group.iloc[:, :9] #removes the merged dataframe parts
+                del subtheme_group['THEME'] #remove theme column cus its redundant
+                subtheme_group['RANK'] = None #clear the incorrect rank numbers
+                subtheme_group['RANK'] = range(1, len(subtheme_group) + 1) #fill rank column with incrementing number
+                subtheme_group.to_csv('Ultimate Collector Series.csv', index=False)
+
+    #elif theme == 'LEGO Creator Expert':
+
+
+    #elif theme == 'LEGO Star Wars':
         #divide into helmets, dioramas, ucs and playsets
 
 
