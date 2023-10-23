@@ -16,7 +16,17 @@ def divide_into_subtables(theme, theme_group):
     #merges the brickset collection csv with the tablepress table to retrieve the subtheme
     #this subtheme will be used to split the table into more subtables (ie more csv files)
     merged_df = pd.merge(theme_group, brickset_sets_df, left_on='SET NUMBER', right_on='Number', how='inner')
-    #merged_df.to_csv('TestMerge.csv', index=False)
+
+    #changed all non-relevant subtheme values for the sake of unity
+    #this was needed because otherwise all 'playsets' would be split across multiple subthemes like 'Episode 4'/'Clone Wars' etc
+    subthemes_to_keep = ['Ultimate Collector Series', 'Helmet Collection', 'Diorama Collection']
+    merged_df.loc[~merged_df['Subtheme'].isin(subthemes_to_keep), 'Subtheme'] = 'Other' #the tilda thing is a NOT operation so it reverses the outcome of this kinda
+
+    #hardcoded values for brick built characters (move later for easier modification)
+    #these need to be hardcoded cus its an arbitrary subtheme i made up
+    brick_built_characters = ['75308-1', '75306-1', '75335-1', '75318-1', '75230-1', '75255-1', '75187-1']
+    merged_df.loc[merged_df['Number'].isin(brick_built_characters), 'Subtheme'] = 'Brick-Built Character'
+    
 
     if theme == 'LEGO Star Wars':
     #divide into helmets, dioramas, ucs and playsets
@@ -28,7 +38,31 @@ def divide_into_subtables(theme, theme_group):
                 subtheme_group['RANK'] = None #clear the incorrect rank numbers
                 subtheme_group['RANK'] = range(1, len(subtheme_group) + 1) #fill rank column with incrementing number
                 subtheme_group.to_csv('Ultimate Collector Series.csv', index=False)
-
+            elif subtheme == 'Helmet Collection':
+                subtheme_group = subtheme_group.iloc[:, :9]
+                del subtheme_group['THEME'] #redundant
+                del subtheme_group['MINIFIGS'] #not needed for helmet collection sets
+                subtheme_group['RANK'] = None  # clear the incorrect rank numbers
+                subtheme_group['RANK'] = range(1, len(subtheme_group) + 1)  # fill rank column with incrementing number
+                subtheme_group.to_csv('Helmet Collection.csv', index=False)
+            elif subtheme == 'Diorama Collection':
+                subtheme_group = subtheme_group.iloc[:, :9]
+                del subtheme_group['THEME']  # redundant
+                subtheme_group['RANK'] = None  # clear the incorrect rank numbers
+                subtheme_group['RANK'] = range(1, len(subtheme_group) + 1)  # fill rank column with incrementing number
+                subtheme_group.to_csv('Diorama Collection.csv', index=False)
+            elif subtheme == 'Brick-Built Character':
+                subtheme_group = subtheme_group.iloc[:, :9]
+                del subtheme_group['THEME']  # redundant
+                subtheme_group['RANK'] = None  # clear the incorrect rank numbers
+                subtheme_group['RANK'] = range(1, len(subtheme_group) + 1)  # fill rank column with incrementing number
+                subtheme_group.to_csv('Brick Built Characters.csv', index=False)
+            else:
+                subtheme_group = subtheme_group.iloc[:, :9]
+                del subtheme_group['THEME']  # redundant
+                subtheme_group['RANK'] = None  # clear the incorrect rank numbers
+                subtheme_group['RANK'] = range(1, len(subtheme_group) + 1)  # fill rank column with incrementing number
+                subtheme_group.to_csv('Star Wars Playsets.csv', index=False) #by elimination all thats left are the playsets
     #elif theme == 'LEGO Creator Expert':
 
 
