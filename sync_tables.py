@@ -3,8 +3,24 @@ import regex as re
 import os
 
 
-#read in main file
-all_themes_df = pd.read_csv('45-All-Themes-Set-Ranking-2023-10-02.csv')
+#read in main file by removing the timestamp appendage
+folder_path = os.getcwd()
+files = os.listdir(folder_path)
+
+#find main table in directory
+main_table_title = '45-All-Themes-Set-Ranking'
+main_table = [file_name for file_name in files if main_table_title in file_name]
+
+#make sure theres only one main table
+#TODO automatically pick newest date/largest file in the case of multiple main files
+if len(main_table) == 1:
+    all_themes_df = pd.read_csv(os.path.join(folder_path, main_table[0]))
+elif len(main_table) < 1:
+    print('ERROR: No files matching main_table_title. Make sure you have the main table csv in the working directory.')
+    quit()
+else:
+    print('ERROR: Multiple files found matching main_table_title. Make sure you have exactly one main table csv in your working directory.')
+    quit()
 brickset_sets_df = pd.read_csv('Brickset-Sets.csv')
 
 #adds a '-1' to the set number to match the formatting of the brickset csv
