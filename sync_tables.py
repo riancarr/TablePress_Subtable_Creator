@@ -92,25 +92,9 @@ for theme, theme_group in theme_groups:
     theme_group['RANK'] = range(1, len(theme_group) + 1)
 
 
-
-    #if subtheme = ultimate collector series
-        #add to ucs table
-    #elif subtheme = helmet collection
-        #add to helmet table
-    #elif subtheme = diorama collection
-        #add to diorama collection
-    #elif subtheme =
-
     theme_group.to_csv(output_file, index=False)
 
 
-    #print(theme_group['PIECES'])
-    #print(theme_group)
-    #filter and assign values of rows based on the 'Theme' value into seperate dataframes or something
 
-    #break into UCS and Star Wars tables based on Theme
 
-    #generate new subtables based on these rows
-
-    #save excel files seperately
 
