@@ -21,6 +21,8 @@ elif len(main_table) < 1:
 else:
     print('ERROR: Multiple files found matching main_table_title. Make sure you have exactly one main table csv in your working directory.')
     quit()
+
+#TODO parse my brickset page to automatically retrieve the brickset csv
 brickset_sets_df = pd.read_csv('Brickset-Sets.csv')
 
 #adds a '-1' to the set number to match the formatting of the brickset csv
@@ -30,7 +32,7 @@ all_themes_df.to_csv('Test all.csv', index=False)
 
 #format the subtables as needed
 #names csv depending on the subtheme name automatically
-def format_subtables(subtheme_dataframe, subtheme_name):
+def format_subtables(subtheme_dataframe, subtheme_name, default_name):
     subtheme_group = subtheme_dataframe.iloc[:, :9]  # removes the merged dataframe parts
     if subtheme_name == 'Helmet Collection' or subtheme_name == 'Midi-Scale Collection':
         del subtheme_group['MINIFIGS'] # not needed for these subthemes
@@ -38,10 +40,10 @@ def format_subtables(subtheme_dataframe, subtheme_name):
     subtheme_group['RANK'] = None  # clear the incorrect rank numbers
     subtheme_group['RANK'] = range(1, len(subtheme_group) + 1)  # fill rank column with incrementing number
 
-    #by process of filtering the other subthemes, the remaining are playsets
+    #by process of filtering the other subthemes, the remaining take the value of the theme-specific 'default' name (determined before being passed to here)
     #necessary to do because playsets official subthemes stretch across LOADS of values
     if subtheme_name == 'Other':
-        subtheme_group.to_csv('Star Wars Playsets.csv', index=False)
+        subtheme_group.to_csv(f'{default_name}.csv', index=False)
     else:
         subtheme_group.to_csv(f'{subtheme_name}.csv', index=False)
 
@@ -51,10 +53,6 @@ def divide_into_subtables(theme, theme_group):
     #this subtheme will be used to split the table into more subtables (ie more csv files)
     merged_df = pd.merge(theme_group, brickset_sets_df, left_on='SET NUMBER', right_on='Number', how='inner')
 
-    #changed all non-relevant subtheme values for the sake of unity
-    #this was needed because otherwise all 'playsets' would be split across multiple subthemes like 'Episode 4'/'Clone Wars' etc
-    subthemes_to_keep = ['Ultimate Collector Series', 'Helmet Collection', 'Diorama Collection']
-    merged_df.loc[~merged_df['Subtheme'].isin(subthemes_to_keep), 'Subtheme'] = 'Other' #the tilda thing is a NOT operation so it reverses the outcome of this kinda
 
     #hardcoded values for brick built characters (move later for easier modification)
     #these need to be hardcoded cus its an arbitrary subtheme i made up
@@ -65,13 +63,27 @@ def divide_into_subtables(theme, theme_group):
     midi_scale_collection = ['75356-1']
     merged_df.loc[merged_df['Number'].isin(midi_scale_collection), 'Subtheme'] = 'Midi-Scale Collection'
 
+    # #hardcoded values for modular compatible buildings because they should be considered part of the collection
+    # modular_compatable_sets = ['910023-1', '910013-1', '910009-1', '76218-1', '76178-1']
+    # merged_df.loc[merged_df['Number'].isin(modular_compatable_sets), 'Subtheme'] = 'Modular Buildings Collection'
+
+    # changed all non-relevant subtheme values for the sake of unity
+    # this was needed because otherwise all 'playsets' would be split across multiple subthemes like 'Episode 4'/'Clone Wars' etc
+    subthemes_to_keep = ['Ultimate Collector Series', 'Helmet Collection', 'Diorama Collection', 'Modular Buildings Collection', 'Vehicles', 'Brick-Built Character', 'Midi-Scale Collection']
+    merged_df.loc[~merged_df['Subtheme'].isin(subthemes_to_keep), 'Subtheme'] = 'Other'  # the tilda thing is a NOT operation so it reverses the outcome of this kinda
+
     if theme == 'LEGO Star Wars':
     #divide into helmets, dioramas, ucs and playsets
-        merged_df_groups = merged_df.groupby('Subtheme')
-        for subtheme, subtheme_group in merged_df_groups:
-            format_subtables(subtheme_group, subtheme)
-    #elif theme == 'LEGO Creator Expert':
+        subtheme_default_name = 'Star Wars Playsets'  # the name given to the 'Other' subthemes once the main ones have been filtered
 
+    elif theme == 'LEGO Creator Expert':  #PROBLEM: the modular buildings across different themes dont combine into one for the modular buildings output
+    #divide into modular buildings and vehicles
+        subtheme_default_name = 'Remaining Icons'  # the name given to the 'Other' subthemes once the main ones have been filtered
+
+    #format the subtables created from the subthemes
+    merged_df_groups = merged_df.groupby('Subtheme')
+    for subtheme, subtheme_group in merged_df_groups:
+        format_subtables(subtheme_group, subtheme, subtheme_default_name)
 
 
 #group by theme
