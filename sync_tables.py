@@ -96,7 +96,6 @@ theme_groups = all_themes_df.groupby('THEME')
 for theme, theme_group in theme_groups:
     if '<a href' in theme:
         sanatized_theme_name = re.search(r'>([^<]+)</a>', theme)
-        print(sanatized_theme_name.group(1))
         if sanatized_theme_name.group(1) == 'LEGO Star Wars' or sanatized_theme_name.group(1) == 'LEGO Creator Expert':
             divide_into_subtables(sanatized_theme_name.group(1), theme_group)
         output_file = f'{sanatized_theme_name.group(1)}.csv'
