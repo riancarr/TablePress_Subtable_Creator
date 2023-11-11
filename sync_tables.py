@@ -15,6 +15,9 @@ main_table = [file_name for file_name in files if main_table_title in file_name]
 #TODO automatically pick newest date/largest file in the case of multiple main files
 if len(main_table) == 1:
     all_themes_df = pd.read_csv(os.path.join(folder_path, main_table[0]))
+    all_themes_df['RANK'] = None  # clear the incorrect rank numbers
+    all_themes_df['RANK'] = range(1, len(all_themes_df) + 1)  # fill rank column with incrementing number
+    all_themes_df.to_csv(os.path.join(folder_path, main_table[0]), index=False)
 elif len(main_table) < 1:
     print('ERROR: No files matching main_table_title. Make sure you have the main table csv in the working directory.')
     quit()
