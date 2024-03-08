@@ -30,8 +30,14 @@ else:
 
 #TODO parse my brickset page to automatically retrieve the brickset csv
 brickset_sets_df = pd.read_csv('Brickset-Sets.csv')
-#maybe parse the brickset csv and change the subthemes based on set number
+#parse the brickset csv and change the subthemes based on set number
+unofficial_modular_buildings = ['71799-1', '76269-1', '910023-1', '76218-1', '910013-1', '910009-1', '76178-1']
+for index, value in brickset_sets_df['Number'].items():
+    print('Value: ' + value)
+    brickset_sets_df.loc[brickset_sets_df['Number'].isin(unofficial_modular_buildings), 'Subtheme'] = 'Modular Buildings Collection'
 
+
+brickset_sets_df.to_csv('Brickset-Sets.csv', index=False)
 
 all_themes_df.to_csv('Test all.csv', index=False)
 
