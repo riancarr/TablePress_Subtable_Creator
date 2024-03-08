@@ -30,6 +30,7 @@ else:
 
 #TODO parse my brickset page to automatically retrieve the brickset csv
 brickset_sets_df = pd.read_csv('Brickset-Sets.csv')
+#maybe parse the brickset csv and change the subthemes based on set number
 
 
 all_themes_df.to_csv('Test all.csv', index=False)
@@ -63,10 +64,6 @@ def divide_into_subtables(theme, theme_group):
     #these need to be hardcoded cus its an arbitrary subtheme i made up
     brick_built_characters = ['75308-1', '75306-1', '75335-1', '75318-1', '75230-1', '75255-1', '75187-1']
     merged_df.loc[merged_df['Number'].isin(brick_built_characters), 'Subtheme'] = 'Brick-Built Character'
-
-    #hardcoded values for midi scale sets because they ALSO arent official on bricksets csv
-    starship_collection = ['75356-1']
-    merged_df.loc[merged_df['Number'].isin(starship_collection), 'Subtheme'] = 'Starship Collection'
 
     # #hardcoded values for modular compatible buildings because they should be considered part of the collection
     # modular_compatable_sets = ['910023-1', '910013-1', '910009-1', '76218-1', '76178-1']
