@@ -18,6 +18,7 @@ if len(main_table) == 1:
     all_themes_df = pd.read_csv(os.path.join(folder_path, main_table[0]))
     all_themes_df['RANK'] = None  # clear the incorrect rank numbers
     all_themes_df['RANK'] = range(1, len(all_themes_df) + 1)  # fill rank column with incrementing number
+    #TODO: check if set number already ends in -1
     all_themes_df['SET NUMBER'] = all_themes_df['SET NUMBER'].astype(str) + '-1' # adds a '-1' to the set number to match the formatting of the brickset csv
     all_themes_df.to_csv(os.path.join(folder_path, main_table[0]), index=False)
 elif len(main_table) < 1:
@@ -64,8 +65,8 @@ def divide_into_subtables(theme, theme_group):
     merged_df.loc[merged_df['Number'].isin(brick_built_characters), 'Subtheme'] = 'Brick-Built Character'
 
     #hardcoded values for midi scale sets because they ALSO arent official on bricksets csv
-    midi_scale_collection = ['75356-1']
-    merged_df.loc[merged_df['Number'].isin(midi_scale_collection), 'Subtheme'] = 'Midi-Scale Collection'
+    starship_collection = ['75356-1']
+    merged_df.loc[merged_df['Number'].isin(starship_collection), 'Subtheme'] = 'Starship Collection'
 
     # #hardcoded values for modular compatible buildings because they should be considered part of the collection
     # modular_compatable_sets = ['910023-1', '910013-1', '910009-1', '76218-1', '76178-1']
@@ -73,7 +74,7 @@ def divide_into_subtables(theme, theme_group):
 
     # changed all non-relevant subtheme values for the sake of unity
     # this was needed because otherwise all 'playsets' would be split across multiple subthemes like 'Episode 4'/'Clone Wars' etc
-    subthemes_to_keep = ['Ultimate Collector Series', 'Helmet Collection', 'Diorama Collection', 'Modular Buildings Collection', 'Vehicles', 'Brick-Built Character', 'Midi-Scale Collection']
+    subthemes_to_keep = ['Ultimate Collector Series', 'Helmet Collection', 'Diorama Collection', 'Modular Buildings Collection', 'Vehicles', 'Brick-Built Character', 'Starship Collection']
     merged_df.loc[~merged_df['Subtheme'].isin(subthemes_to_keep), 'Subtheme'] = 'Other'  # the tilda thing is a NOT operation so it reverses the outcome of this kinda
 
     if theme == 'LEGO Star Wars':
