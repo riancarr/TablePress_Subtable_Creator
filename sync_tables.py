@@ -19,7 +19,7 @@ if len(main_table) == 1:
     all_themes_df['RANK'] = None  # clear the incorrect rank numbers
     all_themes_df['RANK'] = range(1, len(all_themes_df) + 1)  # fill rank column with incrementing number
     #TODO: check if set number already ends in -1
-    all_themes_df['SET NUMBER'] = all_themes_df['SET NUMBER'].astype(str) + '-1' # adds a '-1' to the set number to match the formatting of the brickset csv
+    #all_themes_df['SET NUMBER'] = all_themes_df['SET NUMBER'].astype(str) + '-1' # adds a '-1' to the set number to match the formatting of the brickset csv
     all_themes_df.to_csv(os.path.join(folder_path, main_table[0]), index=False)
 elif len(main_table) < 1:
     print('ERROR: No files matching main_table_title. Make sure you have the main table csv in the working directory.')
@@ -31,9 +31,9 @@ else:
 #TODO parse my brickset page to automatically retrieve the brickset csv
 brickset_sets_df = pd.read_csv('Brickset-Sets.csv')
 #parse the brickset csv and change the subthemes based on set number
+# #hardcoded values for modular compatible buildings because they should be considered part of the collection
 unofficial_modular_buildings = ['71799-1', '76269-1', '910023-1', '76218-1', '910013-1', '910009-1', '76178-1']
 for index, value in brickset_sets_df['Number'].items():
-    print('Value: ' + value)
     brickset_sets_df.loc[brickset_sets_df['Number'].isin(unofficial_modular_buildings), 'Subtheme'] = 'Modular Buildings Collection'
 
 
@@ -71,9 +71,6 @@ def divide_into_subtables(theme, theme_group):
     brick_built_characters = ['75308-1', '75306-1', '75335-1', '75318-1', '75230-1', '75255-1', '75187-1']
     merged_df.loc[merged_df['Number'].isin(brick_built_characters), 'Subtheme'] = 'Brick-Built Character'
 
-    # #hardcoded values for modular compatible buildings because they should be considered part of the collection
-    # modular_compatable_sets = ['910023-1', '910013-1', '910009-1', '76218-1', '76178-1']
-    # merged_df.loc[merged_df['Number'].isin(modular_compatable_sets), 'Subtheme'] = 'Modular Buildings Collection'
 
     # changed all non-relevant subtheme values for the sake of unity
     # this was needed because otherwise all 'playsets' would be split across multiple subthemes like 'Episode 4'/'Clone Wars' etc
@@ -90,6 +87,7 @@ def divide_into_subtables(theme, theme_group):
 
     #format the subtables created from the subthemes
     merged_df_groups = merged_df.groupby('Subtheme')
+    merged_df.to_csv('Merged Test.csv', index=False)
     for subtheme, subtheme_group in merged_df_groups:
         format_subtables(subtheme_group, subtheme, subtheme_default_name)
 
