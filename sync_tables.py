@@ -105,15 +105,18 @@ for theme, theme_group in theme_groups:
     else:
         output_file = f'{theme}.csv'
 
+    #create a copy of the DataFrame to prevent a warning
+    theme_group = theme_group.copy()
+
+    #Filter out rows where 'THEME' value doesn't match 'Original_Theme' (ie are part ofd the subtheme but not the theme)
+    theme_group = theme_group[theme_group['THEME'] == theme_group['Original_Theme']]
+
     #update the ranking number in the new tables
     theme_group['RANK'] = None
     theme_group['RANK'] = range(1, len(theme_group) + 1)
 
-    #restore theme values to their originals (needed to remove modular compatible sets from other themes)
-    theme_group['THEME'] = None  #clear the 'THEME' column
-    theme_group['THEME'] = all_themes_df['Original_Theme']  #restore the original 'Theme' values
-    #maybe loop through theme group and remove anything with a mismatched theme?
-    theme_group = theme_group.iloc[:, :9] #remove the Original Theme column from output
+    # remove the Original Theme column from output
+    theme_group = theme_group.iloc[:, :9]
 
     theme_group.to_csv(output_file, index=False)
 
