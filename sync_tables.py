@@ -41,9 +41,6 @@ brickset_sets_df.to_csv('Brickset-Sets.csv', index=False)
 all_themes_df['Original_Theme'] = all_themes_df['THEME']
 all_themes_df.loc[all_themes_df['SET NUMBER'].isin(unofficial_modular_buildings), 'THEME'] = '<a href="https://thebrickboyo.com/set-rankings/creator-expert/" rel="noopener" target="_blank">LEGO Creator Expert</a>'
 
-all_themes_df.to_csv('Test all.csv', index=False)
-
-
 #format the subtables as needed
 #names csv depending on the subtheme name automatically
 def format_subtables(subtheme_dataframe, subtheme_name, default_name):
@@ -83,7 +80,7 @@ def divide_into_subtables(theme, theme_group):
     #divide into helmets, dioramas, ucs and playsets
         subtheme_default_name = 'Star Wars Playsets'  # the name given to the 'Other' subthemes once the main ones have been filtered
 
-    elif theme == 'LEGO Creator Expert':  #PROBLEM: the modular buildings across different themes dont combine into one for the modular buildings output
+    elif theme == 'LEGO Creator Expert':
     #divide into modular buildings and vehicles
         subtheme_default_name = 'Remaining Icons'  # the name given to the 'Other' subthemes once the main ones have been filtered
 
@@ -109,14 +106,16 @@ for theme, theme_group in theme_groups:
     theme_group = theme_group.copy()
 
     #Filter out rows where 'THEME' value doesn't match 'Original_Theme' (ie are part ofd the subtheme but not the theme)
+    #then delete the Theme column cus its redundant in all tables bar the 'All' one, which isnt modified by this code
     theme_group = theme_group[theme_group['THEME'] == theme_group['Original_Theme']]
+    del theme_group['THEME']
 
     #update the ranking number in the new tables
     theme_group['RANK'] = None
     theme_group['RANK'] = range(1, len(theme_group) + 1)
 
     # remove the Original Theme column from output
-    theme_group = theme_group.iloc[:, :9]
+    theme_group = theme_group.iloc[:, :8]
 
     theme_group.to_csv(output_file, index=False)
 
