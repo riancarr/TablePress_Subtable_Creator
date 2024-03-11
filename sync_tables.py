@@ -18,7 +18,7 @@ if len(main_table) == 1:
     all_themes_df = pd.read_csv(os.path.join(folder_path, main_table[0]))
     all_themes_df['RANK'] = None  # clear the incorrect rank numbers
     all_themes_df['RANK'] = range(1, len(all_themes_df) + 1)  # fill rank column with incrementing number
-    #TODO: check if set number already ends in -1
+    #TODO: check if set number already ends in -1 (currently doesnt so i commented out the next line)
     #all_themes_df['SET NUMBER'] = all_themes_df['SET NUMBER'].astype(str) + '-1' # adds a '-1' to the set number to match the formatting of the brickset csv
     all_themes_df.to_csv(os.path.join(folder_path, main_table[0]), index=False)
 elif len(main_table) < 1:
@@ -31,13 +31,15 @@ else:
 #TODO parse my brickset page to automatically retrieve the brickset csv
 brickset_sets_df = pd.read_csv('Brickset-Sets.csv')
 #parse the brickset csv and change the subthemes based on set number
-# #hardcoded values for modular compatible buildings because they should be considered part of the collection
+# hardcoded values for modular compatible buildings because they should be considered part of the collection
+# change theme for these into creator expert?
+# do all this AFTER the creator expert filtering?
 unofficial_modular_buildings = ['71799-1', '76269-1', '910023-1', '76218-1', '910013-1', '910009-1', '76178-1']
 for index, value in brickset_sets_df['Number'].items():
     brickset_sets_df.loc[brickset_sets_df['Number'].isin(unofficial_modular_buildings), 'Subtheme'] = 'Modular Buildings Collection'
-
-
 brickset_sets_df.to_csv('Brickset-Sets.csv', index=False)
+all_themes_df['Original_Theme'] = all_themes_df['THEME']
+all_themes_df.loc[all_themes_df['SET NUMBER'].isin(unofficial_modular_buildings), 'THEME'] = '<a href="https://thebrickboyo.com/set-rankings/creator-expert/" rel="noopener" target="_blank">LEGO Creator Expert</a>'
 
 all_themes_df.to_csv('Test all.csv', index=False)
 
@@ -46,7 +48,7 @@ all_themes_df.to_csv('Test all.csv', index=False)
 #names csv depending on the subtheme name automatically
 def format_subtables(subtheme_dataframe, subtheme_name, default_name):
     subtheme_group = subtheme_dataframe.iloc[:, :9]  # removes the merged dataframe parts
-    if subtheme_name == 'Helmet Collection' or subtheme_name == 'Midi-Scale Collection':
+    if subtheme_name == 'Helmet Collection' or subtheme_name == 'Starship Collection':
         del subtheme_group['MINIFIGS'] # not needed for these subthemes
     del subtheme_group['THEME']  # remove theme column cus its redundant
     subtheme_group['RANK'] = None  # clear the incorrect rank numbers
@@ -87,7 +89,6 @@ def divide_into_subtables(theme, theme_group):
 
     #format the subtables created from the subthemes
     merged_df_groups = merged_df.groupby('Subtheme')
-    merged_df.to_csv('Merged Test.csv', index=False)
     for subtheme, subtheme_group in merged_df_groups:
         format_subtables(subtheme_group, subtheme, subtheme_default_name)
 
@@ -108,6 +109,8 @@ for theme, theme_group in theme_groups:
     theme_group['RANK'] = None
     theme_group['RANK'] = range(1, len(theme_group) + 1)
 
+    theme_group['THEME'] = None  # Clear the 'THEME' column
+    theme_group['THEME'] = all_themes_df['Original_Theme']  # Restore the original 'Theme' values
 
     theme_group.to_csv(output_file, index=False)
 
