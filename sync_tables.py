@@ -109,8 +109,11 @@ for theme, theme_group in theme_groups:
     theme_group['RANK'] = None
     theme_group['RANK'] = range(1, len(theme_group) + 1)
 
-    theme_group['THEME'] = None  # Clear the 'THEME' column
-    theme_group['THEME'] = all_themes_df['Original_Theme']  # Restore the original 'Theme' values
+    #restore theme values to their originals (needed to remove modular compatible sets from other themes)
+    theme_group['THEME'] = None  #clear the 'THEME' column
+    theme_group['THEME'] = all_themes_df['Original_Theme']  #restore the original 'Theme' values
+    #maybe loop through theme group and remove anything with a mismatched theme?
+    theme_group = theme_group.iloc[:, :9] #remove the Original Theme column from output
 
     theme_group.to_csv(output_file, index=False)
 
